@@ -21,6 +21,7 @@ class DatabaseHelper {
     // Get the path to the database file
     String path = join(await getDatabasesPath(), 'cookbook_database.db');
 
+    // await deleteDatabase(path); // TODO: TEMPORARY DELETE DB
     // Open/create the database
     return await openDatabase(
       path,
