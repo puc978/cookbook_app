@@ -19,7 +19,7 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     // Get the path to the database file
-    String path = join(await getDatabasesPath(), 'my_app_database.db');
+    String path = join(await getDatabasesPath(), 'cookbook_database.db');
 
     // Open/create the database
     return await openDatabase(
@@ -34,8 +34,8 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE tasks(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        description TEXT,
+        recipeName TEXT NOT NULL,
+        ingredients TEXT,
         isCompleted INTEGER NOT NULL DEFAULT 0,
         createdAt TEXT NOT NULL
       )

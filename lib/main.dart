@@ -28,8 +28,8 @@ class TaskListScreen extends StatefulWidget {
 class _TaskListScreenState extends State<TaskListScreen> {
   final dbHelper = DatabaseHelper.instance;
   List<Task> tasks = [];
-  final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
+  final recipeNameController = TextEditingController();
+  final ingredientsController = TextEditingController();
 
   @override
   void initState() {
@@ -45,24 +45,24 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   _addTask() async {
-    if (titleController.text.isEmpty) return;
+    if (recipeNameController.text.isEmpty) return;
 
     await dbHelper.insertTask(Task(
-      title: titleController.text,
-      description: descriptionController.text,
+      recipeName: recipeNameController.text,
+      ingredients: ingredientsController.text,
       createdAt: DateTime.now(),
     ));
 
-    titleController.clear();
-    descriptionController.clear();
+    recipeNameController.clear();
+    ingredientsController.clear();
     _refreshTaskList();
   }
 
   _toggleTaskStatus(Task task) async {
     Task updatedTask = Task(
       id: task.id,
-      title: task.title,
-      description: task.description,
+      recipeName: task.recipeName,
+      ingredients: task.ingredients,
       isCompleted: !task.isCompleted,
       createdAt: task.createdAt,
     );
@@ -80,7 +80,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SQLite Task Manager'),
+        title: Text('cookbook'),
       ),
       body: Column(
         children: [
@@ -89,24 +89,24 @@ class _TaskListScreenState extends State<TaskListScreen> {
             child: Column(
               children: [
                 TextField(
-                  controller: titleController,
+                  controller: recipeNameController,
                   decoration: InputDecoration(
-                    labelText: 'Task Title',
+                    labelText: 'name',
                     border: OutlineInputBorder(),
                   ),
                 ),
                 SizedBox(height: 8.0),
                 TextField(
-                  controller: descriptionController,
+                  controller: ingredientsController,
                   decoration: InputDecoration(
-                    labelText: 'Description (Optional)',
+                    labelText: 'ingredients',
                     border: OutlineInputBorder(),
                   ),
                 ),
                 SizedBox(height: 8.0),
                 ElevatedButton(
                   onPressed: _addTask,
-                  child: Text('Add Task'),
+                  child: Text('add recipe'),
                 ),
               ],
             ),
@@ -118,15 +118,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 Task task = tasks[index];
                 return ListTile(
                   title: Text(
-                    task.title,
+                    task.recipeName,
                     style: TextStyle(
                       decoration: task.isCompleted
                           ? TextDecoration.lineThrough
                           : null,
                     ),
                   ),
-                  subtitle: task.description != null
-                      ? Text(task.description!)
+                  subtitle: task.ingredients != null
+                      ? Text(task.ingredients!)
                       : null,
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

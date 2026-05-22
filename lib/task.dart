@@ -1,14 +1,14 @@
 class Task {
   final int? id;
-  final String title;
-  final String? description;
+  final String recipeName;
+  final String? ingredients;
   final bool isCompleted;
   final DateTime createdAt;
 
   Task({
     this.id,
-    required this.title,
-    this.description,
+    required this.recipeName,
+    this.ingredients,
     this.isCompleted = false,
     required this.createdAt,
   });
@@ -17,8 +17,8 @@ class Task {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'title': title,
-      'description': description,
+      'recipeName': recipeName,
+      'ingredients': ingredients,
       'isCompleted': isCompleted ? 1 : 0,
       'createdAt': createdAt.toIso8601String(),
     };
@@ -28,8 +28,8 @@ class Task {
   factory Task.fromMap(Map<String, dynamic> map) {
     return Task(
       id: map['id'],
-      title: map['title'],
-      description: map['description'],
+      recipeName: map['recipeName'],
+      ingredients: map['ingredients'],
       isCompleted: map['isCompleted'] == 1,
       createdAt: DateTime.parse(map['createdAt']),
     );
@@ -38,6 +38,6 @@ class Task {
   // For debugging
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, isCompleted: $isCompleted)';
+    return 'Task(id: $id, recipeName: $recipeName, isCompleted: $isCompleted)';
   }
 }
