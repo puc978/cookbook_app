@@ -107,6 +107,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
+                SizedBox(height: 8.0),
                 TextField(
                   controller: instructionController,
                   decoration: InputDecoration(
@@ -136,9 +137,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           : null,
                     ),
                   ),
-                  subtitle: task.ingredients != null
-                      ? Text(task.ingredients!)
-                      : null,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => RecipeScreen(task: task),
+                      ),
+                    );
+                  },
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -161,6 +167,46 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class RecipeScreen extends StatelessWidget {
+  final Task task;
+
+  const RecipeScreen({
+    super.key,
+    required this.task,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(task.recipeName),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              task.recipeName,
+              style: TextStyle(fontSize: 24),
+            ),
+
+            SizedBox(height: 16),
+
+            Text("Ingredients:"),
+            Text(task.ingredients ?? ""),
+
+            SizedBox(height: 16),
+
+            Text("Instructions:"),
+            Text(task.instruction ?? ""),
+          ],
+        ),
       ),
     );
   }
