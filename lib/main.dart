@@ -30,6 +30,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   List<Task> tasks = [];
   final recipeNameController = TextEditingController();
   final ingredientsController = TextEditingController();
+  final instructionController = TextEditingController();
 
   @override
   void initState() {
@@ -50,11 +51,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
     await dbHelper.insertTask(Task(
       recipeName: recipeNameController.text,
       ingredients: ingredientsController.text,
+      instruction: instructionController.text,
       createdAt: DateTime.now(),
     ));
 
     recipeNameController.clear();
     ingredientsController.clear();
+    instructionController.clear();
     _refreshTaskList();
   }
 
@@ -63,6 +66,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       id: task.id,
       recipeName: task.recipeName,
       ingredients: task.ingredients,
+      instruction: task.instruction,
       isCompleted: !task.isCompleted,
       createdAt: task.createdAt,
     );
@@ -100,6 +104,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   controller: ingredientsController,
                   decoration: InputDecoration(
                     labelText: 'ingredients',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                TextField(
+                  controller: instructionController,
+                  decoration: InputDecoration(
+                    labelText: 'instruction',
                     border: OutlineInputBorder(),
                   ),
                 ),

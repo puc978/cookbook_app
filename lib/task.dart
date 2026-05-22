@@ -2,6 +2,7 @@ class Task {
   final int? id;
   final String recipeName;
   final String? ingredients;
+  final String? instruction;
   final bool isCompleted;
   final DateTime createdAt;
 
@@ -9,6 +10,7 @@ class Task {
     this.id,
     required this.recipeName,
     this.ingredients,
+    this.instruction,
     this.isCompleted = false,
     required this.createdAt,
   });
@@ -19,6 +21,7 @@ class Task {
       'id': id,
       'recipeName': recipeName,
       'ingredients': ingredients,
+      'instruction': instruction,
       'isCompleted': isCompleted ? 1 : 0,
       'createdAt': createdAt.toIso8601String(),
     };
@@ -30,6 +33,7 @@ class Task {
       id: map['id'],
       recipeName: map['recipeName'],
       ingredients: map['ingredients'],
+      instruction: map['instruction'],
       isCompleted: map['isCompleted'] == 1,
       createdAt: DateTime.parse(map['createdAt']),
     );

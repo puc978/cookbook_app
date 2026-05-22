@@ -36,6 +36,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         recipeName TEXT NOT NULL,
         ingredients TEXT,
+        instruction TEXT,
         isCompleted INTEGER NOT NULL DEFAULT 0,
         createdAt TEXT NOT NULL
       )
