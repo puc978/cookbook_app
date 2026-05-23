@@ -95,18 +95,18 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
           return ListTile(
             title: Text(task.recipeName),
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => RecipeScreen(task: task),
                 ),
               );
+
+              if (result == true) {
+                _refreshTaskList();
+              }
             },
-            trailing: IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () => _deleteTask(task.id!),
-            ),
           );
         },
       ),
@@ -230,7 +230,36 @@ class RecipeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("recipe"),
+        
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'edit') {
+                print('edit');
+              }
+
+              if (value == 'delete') {
+                await DatabaseHelper.instance.deleteTask(task.id!);
+
+                Navigator.pop(context, true);
+              }
+            },
+
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'edit',
+                child: Text('Edit'),
+              ),
+
+              PopupMenuItem(
+                value: 'delete',
+                child: Text('Delete'),
+              ),
+            ],
+          )
+        ],
       ),
+      
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
