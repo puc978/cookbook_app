@@ -235,7 +235,16 @@ class RecipeScreen extends StatelessWidget {
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'edit') {
-                print('edit');
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditRecipeScreen(task: task),
+                  ),
+                );
+
+                if (result == true) {
+                  Navigator.pop(context, true);
+                }
               }
 
               if (value == 'delete') {
@@ -279,6 +288,105 @@ class RecipeScreen extends StatelessWidget {
 
             Text("Instructions:"),
             Text(task.instruction ?? ""),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditRecipeScreen extends StatefulWidget {
+  final Task task;
+
+  const EditRecipeScreen({
+    super.key,
+    required this.task,
+  });
+
+  @override
+  State<EditRecipeScreen> createState() => _EditRecipeScreenState();
+}
+
+class _EditRecipeScreenState extends State<EditRecipeScreen> {
+  late TextEditingController recipeNameController;
+  late TextEditingController ingredientsController;
+  late TextEditingController instructionController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    recipeNameController =
+        TextEditingController(text: widget.task.recipeName);
+
+    ingredientsController =
+        TextEditingController(text: widget.task.ingredients);
+
+    instructionController =
+        TextEditingController(text: widget.task.instruction);
+  }
+
+  Future<void> _updateTask() async {
+    Task updatedTask = Task(
+      id: widget.task.id,
+      recipeName: recipeNameController.text,
+      ingredients: ingredientsController.text,
+      instruction: instructionController.text,
+      isCompleted: widget.task.isCompleted,
+      createdAt: widget.task.createdAt,
+    );
+
+    await DatabaseHelper.instance.updateTask(updatedTask);
+
+    Navigator.pop(context, true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('edit recipe'),
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+
+        child: Column(
+          children: [
+            TextField(
+              controller: recipeNameController,
+              decoration: InputDecoration(
+                labelText: 'name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            TextField(
+              controller: ingredientsController,
+              decoration: InputDecoration(
+                labelText: 'ingredients',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            TextField(
+              controller: instructionController,
+              decoration: InputDecoration(
+                labelText: 'instruction',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            ElevatedButton(
+              onPressed: _updateTask,
+              child: Text('save'),
+            ),
           ],
         ),
       ),
