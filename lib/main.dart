@@ -87,31 +87,30 @@ class _TaskListScreenState extends State<TaskListScreen> {
         title: Text('cookbook'),
       ),
 
-      body: Expanded(
-        child: ListView.builder(
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            Task task = tasks[index];
+      
+      body: ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          Task task = tasks[index];
 
-            return ListTile(
-              title: Text(task.recipeName),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => RecipeScreen(task: task),
-                  ),
-                );
-              },
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => _deleteTask(task.id!),
-              ),
-            );
-          },
-        ),
+          return ListTile(
+            title: Text(task.recipeName),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => RecipeScreen(task: task),
+                ),
+              );
+            },
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _deleteTask(task.id!),
+            ),
+          );
+        },
       ),
-
+      
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
 
