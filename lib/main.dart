@@ -86,87 +86,133 @@ class _TaskListScreenState extends State<TaskListScreen> {
       appBar: AppBar(
         title: Text('cookbook'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: recipeNameController,
-                  decoration: InputDecoration(
-                    labelText: 'name',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                TextField(
-                  controller: ingredientsController,
-                  decoration: InputDecoration(
-                    labelText: 'ingredients',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                TextField(
-                  controller: instructionController,
-                  decoration: InputDecoration(
-                    labelText: 'instruction',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                ElevatedButton(
-                  onPressed: _addTask,
-                  child: Text('add recipe'),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                Task task = tasks[index];
-                return ListTile(
-                  title: Text(
-                    task.recipeName,
-                    style: TextStyle(
-                      decoration: task.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RecipeScreen(task: task),
-                      ),
-                    );
-                  },
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          task.isCompleted
-                              ? Icons.check_box
-                              : Icons.check_box_outline_blank,
-                        ),
-                        onPressed: () => _toggleTaskStatus(task),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => _deleteTask(task.id!),
-                      ),
-                    ],
+
+      body: Expanded(
+        child: ListView.builder(
+          itemCount: tasks.length,
+          itemBuilder: (context, index) {
+            Task task = tasks[index];
+
+            return ListTile(
+              title: Text(task.recipeName),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RecipeScreen(task: task),
                   ),
                 );
               },
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _deleteTask(task.id!),
+              ),
+            );
+          },
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddRecipeScreen(
+                dbHelper: dbHelper,
+              ),
             ),
-          ),
-        ],
+          );
+
+          _refreshTaskList();
+        },
+      ),
+      );
+  }
+}
+
+
+class AddRecipeScreen extends StatefulWidget {
+  final DatabaseHelper dbHelper;
+
+  const AddRecipeScreen({
+    super.key,
+    required this.dbHelper,
+  });
+
+  @override
+  State<AddRecipeScreen> createState() => _AddRecipeScreenState();
+}
+
+class _AddRecipeScreenState extends State<AddRecipeScreen> {
+  final recipeNameController = TextEditingController();
+  final ingredientsController = TextEditingController();
+  final instructionController = TextEditingController();
+
+  Future<void> _addTask() async {
+    if (recipeNameController.text.isEmpty) return;
+
+    await widget.dbHelper.insertTask(
+      Task(
+        recipeName: recipeNameController.text,
+        ingredients: ingredientsController.text,
+        instruction: instructionController.text,
+        createdAt: DateTime.now(),
+      ),
+    );
+
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('add recipe'),
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+
+        child: Column(
+          children: [
+            TextField(
+              controller: recipeNameController,
+              decoration: InputDecoration(
+                labelText: 'name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            TextField(
+              controller: ingredientsController,
+              decoration: InputDecoration(
+                labelText: 'ingredients',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            TextField(
+              controller: instructionController,
+              decoration: InputDecoration(
+                labelText: 'instruction',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            ElevatedButton(
+              onPressed: _addTask,
+              child: Text('save'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -184,7 +230,7 @@ class RecipeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(task.recipeName),
+        title: Text("recipe"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
