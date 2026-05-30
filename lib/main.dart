@@ -131,6 +131,66 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 }
 
+class RecipeForm extends StatelessWidget {
+  final TextEditingController recipeNameController ;
+  final TextEditingController ingredientsController;
+  final TextEditingController instructionController;
+  final VoidCallback onSave;
+
+  const RecipeForm({
+    super.key,
+    required this.recipeNameController,
+    required this.ingredientsController,
+    required this.instructionController,
+    required this.onSave,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+
+      child: Column(
+        children: [
+          TextField(
+            controller: recipeNameController,
+            decoration: InputDecoration(
+              labelText: 'name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          TextField(
+            controller: ingredientsController,
+            decoration: InputDecoration(
+              labelText: 'ingredients',
+              border: OutlineInputBorder(),
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          TextField(
+            controller: instructionController,
+            decoration: InputDecoration(
+              labelText: 'instruction',
+              border: OutlineInputBorder(),
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          ElevatedButton(
+            onPressed: onSave,
+            child: Text('save'),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class AddRecipeScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
@@ -170,49 +230,74 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       appBar: AppBar(
         title: Text('add recipe'),
       ),
+      
+      body: RecipeForm(
+        recipeNameController: recipeNameController, 
+        ingredientsController: ingredientsController, 
+        instructionController: instructionController, 
+        onSave: _addTask)
+    );
+  }
+}
 
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+class EditRecipeScreen extends StatefulWidget {
+  final Task task;
 
-        child: Column(
-          children: [
-            TextField(
-              controller: recipeNameController,
-              decoration: InputDecoration(
-                labelText: 'name',
-                border: OutlineInputBorder(),
-              ),
-            ),
+  const EditRecipeScreen({
+    super.key,
+    required this.task,
+  });
 
-            SizedBox(height: 8),
+  @override
+  State<EditRecipeScreen> createState() => _EditRecipeScreenState();
+}
 
-            TextField(
-              controller: ingredientsController,
-              decoration: InputDecoration(
-                labelText: 'ingredients',
-                border: OutlineInputBorder(),
-              ),
-            ),
+class _EditRecipeScreenState extends State<EditRecipeScreen> {
+  late TextEditingController recipeNameController;
+  late TextEditingController ingredientsController;
+  late TextEditingController instructionController;
 
-            SizedBox(height: 8),
+  @override
+  void initState() {
+    super.initState();
 
-            TextField(
-              controller: instructionController,
-              decoration: InputDecoration(
-                labelText: 'instruction',
-                border: OutlineInputBorder(),
-              ),
-            ),
+    recipeNameController =
+        TextEditingController(text: widget.task.recipeName);
 
-            SizedBox(height: 8),
+    ingredientsController =
+        TextEditingController(text: widget.task.ingredients);
 
-            ElevatedButton(
-              onPressed: _addTask,
-              child: Text('save'),
-            ),
-          ],
-        ),
+    instructionController =
+        TextEditingController(text: widget.task.instruction);
+  }
+
+  Future<void> _updateTask() async {
+    Task updatedTask = Task(
+      id: widget.task.id,
+      recipeName: recipeNameController.text,
+      ingredients: ingredientsController.text,
+      instruction: instructionController.text,
+      isCompleted: widget.task.isCompleted,
+      createdAt: widget.task.createdAt,
+    );
+
+    await DatabaseHelper.instance.updateTask(updatedTask);
+
+    Navigator.pop(context, true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('edit recipe'),
       ),
+
+      body: RecipeForm(
+        recipeNameController: recipeNameController, 
+        ingredientsController: ingredientsController, 
+        instructionController: instructionController, 
+        onSave: _updateTask)
     );
   }
 }
@@ -288,105 +373,6 @@ class RecipeScreen extends StatelessWidget {
 
             Text("Instructions:"),
             Text(task.instruction ?? ""),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class EditRecipeScreen extends StatefulWidget {
-  final Task task;
-
-  const EditRecipeScreen({
-    super.key,
-    required this.task,
-  });
-
-  @override
-  State<EditRecipeScreen> createState() => _EditRecipeScreenState();
-}
-
-class _EditRecipeScreenState extends State<EditRecipeScreen> {
-  late TextEditingController recipeNameController;
-  late TextEditingController ingredientsController;
-  late TextEditingController instructionController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    recipeNameController =
-        TextEditingController(text: widget.task.recipeName);
-
-    ingredientsController =
-        TextEditingController(text: widget.task.ingredients);
-
-    instructionController =
-        TextEditingController(text: widget.task.instruction);
-  }
-
-  Future<void> _updateTask() async {
-    Task updatedTask = Task(
-      id: widget.task.id,
-      recipeName: recipeNameController.text,
-      ingredients: ingredientsController.text,
-      instruction: instructionController.text,
-      isCompleted: widget.task.isCompleted,
-      createdAt: widget.task.createdAt,
-    );
-
-    await DatabaseHelper.instance.updateTask(updatedTask);
-
-    Navigator.pop(context, true);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('edit recipe'),
-      ),
-
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-
-        child: Column(
-          children: [
-            TextField(
-              controller: recipeNameController,
-              decoration: InputDecoration(
-                labelText: 'name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            SizedBox(height: 8),
-
-            TextField(
-              controller: ingredientsController,
-              decoration: InputDecoration(
-                labelText: 'ingredients',
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            SizedBox(height: 8),
-
-            TextField(
-              controller: instructionController,
-              decoration: InputDecoration(
-                labelText: 'instruction',
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            SizedBox(height: 8),
-
-            ElevatedButton(
-              onPressed: _updateTask,
-              child: Text('save'),
-            ),
           ],
         ),
       ),
