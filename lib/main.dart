@@ -219,7 +219,8 @@ class DynamicTextFields extends StatelessWidget {
             controller: controllers[index],
             decoration: InputDecoration(
               labelText: index == 0 ? label : null,
-              border: const OutlineInputBorder(),
+              hintText: 'write text...',
+              border: InputBorder.none,
               prefixText: numbered ? '${index + 1}. ': '• ',
 
               suffixIcon: index == controllers.length - 1
