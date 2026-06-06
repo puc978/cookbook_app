@@ -197,6 +197,7 @@ class DynamicTextFields extends StatelessWidget {
   final VoidCallback onAdd;
   final Function(int index) onRemove;
   final String label;
+  final bool numbered;
 
   const DynamicTextFields({
     super.key,
@@ -204,6 +205,7 @@ class DynamicTextFields extends StatelessWidget {
     required this.onAdd,
     required this.onRemove,
     required this.label,
+    this.numbered = false,
   });
 
   @override
@@ -218,6 +220,7 @@ class DynamicTextFields extends StatelessWidget {
             decoration: InputDecoration(
               labelText: index == 0 ? label : null,
               border: const OutlineInputBorder(),
+              prefixText: numbered ? '${index + 1}. ': '• ',
 
               suffixIcon: index == controllers.length - 1
                   ? IconButton(
@@ -322,6 +325,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
           controllers: ingredientsControllers,
           onAdd: _addIngredientField,
           onRemove: _removeIngredientField,
+          numbered: false,
         ),
 
         instructionsWidget: DynamicTextFields(
@@ -329,6 +333,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
           controllers: instructionControllers,
           onRemove: _removeInstructionField,
           onAdd: _addInstructionField,
+          numbered: true,
         ),
 
         onSave: _addTask,
@@ -456,6 +461,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
           controllers: ingredientsControllers,
           onAdd: _addIngredientField,
           onRemove: _removeIngredientField,
+          numbered: false,
         ),
 
         instructionsWidget: DynamicTextFields(
@@ -463,6 +469,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
           controllers: instructionControllers,
           onAdd: _addInstructionField,
           onRemove: _removeInstructionField,
+          numbered: true,
         ),
         onSave: _updateTask)
     );
