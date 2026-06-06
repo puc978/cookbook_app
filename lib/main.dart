@@ -132,16 +132,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
 }
 
 class RecipeForm extends StatelessWidget {
-  final TextEditingController recipeNameController ;
-  final TextEditingController ingredientsController;
-  final TextEditingController instructionController;
+  final TextEditingController recipeNameController;
+  final Widget ingredientsWidget;
+  final Widget instructionsWidget;
   final VoidCallback onSave;
 
   const RecipeForm({
     super.key,
     required this.recipeNameController,
-    required this.ingredientsController,
-    required this.instructionController,
+    required this.ingredientsWidget,
+    required this.instructionsWidget,
     required this.onSave,
   });
 
@@ -162,25 +162,13 @@ class RecipeForm extends StatelessWidget {
 
           SizedBox(height: 8),
 
-          TextField(
-            controller: ingredientsController,
-            decoration: InputDecoration(
-              labelText: 'ingredients',
-              border: OutlineInputBorder(),
-            ),
-          ),
+          ingredientsWidget,
 
           SizedBox(height: 8),
 
-          TextField(
-            controller: instructionController,
-            decoration: InputDecoration(
-              labelText: 'instruction',
-              border: OutlineInputBorder(),
-            ),
-          ),
+          instructionsWidget,
 
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
 
           ElevatedButton(
             onPressed: onSave,
@@ -191,7 +179,7 @@ class RecipeForm extends StatelessWidget {
     );
   }
 }
-
+     
 class AddRecipeScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
 
@@ -204,10 +192,67 @@ class AddRecipeScreen extends StatefulWidget {
   State<AddRecipeScreen> createState() => _AddRecipeScreenState();
 }
 
+class DynamicTextFields extends StatelessWidget {
+  final List<TextEditingController> controllers;
+  final VoidCallback onAdd;
+  final String label;
+
+  const DynamicTextFields({
+    super.key,
+    required this.controllers,
+    required this.onAdd,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(
+        controllers.length,
+        (index) => Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: TextField(
+            controller: controllers[index],
+            decoration: InputDecoration(
+              labelText: index == 0 ? label : null,
+              border: const OutlineInputBorder(),
+
+              suffixIcon: index == controllers.length - 1
+                  ? IconButton(
+                      onPressed: onAdd,
+                      icon: const Icon(Icons.add),
+                    )
+                  : null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final recipeNameController = TextEditingController();
-  final ingredientsController = TextEditingController();
-  final instructionController = TextEditingController();
+
+  List<TextEditingController> ingredientsControllers = [
+    TextEditingController(),
+  ];
+
+  List<TextEditingController> instructionControllers = [
+    TextEditingController(),
+  ];
+
+  void _addIngredientField() {
+    setState(() {
+      ingredientsControllers.add(TextEditingController());
+    });
+  }
+
+  void _addInstructionField() {
+    setState(() {
+      instructionControllers.add(TextEditingController());
+    });
+  }
 
   Future<void> _addTask() async {
     if (recipeNameController.text.isEmpty) return;
@@ -215,8 +260,14 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     await widget.dbHelper.insertTask(
       Task(
         recipeName: recipeNameController.text,
-        ingredients: ingredientsController.text,
-        instruction: instructionController.text,
+        ingredients: ingredientsControllers
+            .map((e) => e.text)
+            .where((e) => e.isNotEmpty)
+            .join('\n'),
+        instruction: instructionControllers
+            .map((e) => e.text)
+            .where((e) => e.isNotEmpty)
+            .join('\n'),
         createdAt: DateTime.now(),
       ),
     );
@@ -232,10 +283,22 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       ),
       
       body: RecipeForm(
-        recipeNameController: recipeNameController, 
-        ingredientsController: ingredientsController, 
-        instructionController: instructionController, 
-        onSave: _addTask)
+        recipeNameController: recipeNameController,
+
+        ingredientsWidget: DynamicTextFields(
+          label: 'ingredients',
+          controllers: ingredientsControllers,
+          onAdd: _addIngredientField,
+        ),
+
+        instructionsWidget: DynamicTextFields(
+          label: 'instructions',
+          controllers: instructionControllers,
+          onAdd: _addInstructionField,
+        ),
+
+        onSave: _addTask,
+      )
     );
   }
 }
@@ -254,8 +317,8 @@ class EditRecipeScreen extends StatefulWidget {
 
 class _EditRecipeScreenState extends State<EditRecipeScreen> {
   late TextEditingController recipeNameController;
-  late TextEditingController ingredientsController;
-  late TextEditingController instructionController;
+  late List<TextEditingController> ingredientsControllers;
+  late List<TextEditingController> instructionControllers;
 
   @override
   void initState() {
@@ -264,19 +327,52 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
     recipeNameController =
         TextEditingController(text: widget.task.recipeName);
 
-    ingredientsController =
-        TextEditingController(text: widget.task.ingredients);
+    ingredientsControllers =
+        (widget.task.ingredients ?? '')
+            .split('\n')
+            .map((e) => TextEditingController(text: e))
+            .toList();
 
-    instructionController =
-        TextEditingController(text: widget.task.instruction);
+    instructionControllers =
+        (widget.task.instruction ?? '')
+            .split('\n')
+            .map((e) => TextEditingController(text: e))
+            .toList();
+
+    if (ingredientsControllers.isEmpty) {
+      ingredientsControllers.add(TextEditingController());
+    }
+
+    if (instructionControllers.isEmpty) {
+      instructionControllers.add(TextEditingController());
+    }
+  }
+
+  void _addIngredientField() {
+    setState(() {
+      ingredientsControllers.add(TextEditingController());
+    });
+  }
+
+  void _addInstructionField() {
+    setState(() {
+      instructionControllers.add(TextEditingController());
+    });
   }
 
   Future<void> _updateTask() async {
     Task updatedTask = Task(
       id: widget.task.id,
       recipeName: recipeNameController.text,
-      ingredients: ingredientsController.text,
-      instruction: instructionController.text,
+      ingredients: ingredientsControllers
+        .map((e) => e.text)
+        .where((e) => e.isNotEmpty)
+        .join('\n'),
+
+      instruction: instructionControllers
+        .map((e) => e.text)
+        .where((e) => e.isNotEmpty)
+        .join('\n'),
       isCompleted: widget.task.isCompleted,
       createdAt: widget.task.createdAt,
     );
@@ -295,8 +391,17 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
 
       body: RecipeForm(
         recipeNameController: recipeNameController, 
-        ingredientsController: ingredientsController, 
-        instructionController: instructionController, 
+        ingredientsWidget: DynamicTextFields(
+        label: 'ingredients',
+          controllers: ingredientsControllers,
+          onAdd: _addIngredientField,
+        ),
+
+        instructionsWidget: DynamicTextFields(
+          label: 'instructions',
+          controllers: instructionControllers,
+          onAdd: _addInstructionField,
+        ),
         onSave: _updateTask)
     );
   }
