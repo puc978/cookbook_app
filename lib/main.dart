@@ -152,19 +152,59 @@ class RecipeForm extends StatelessWidget {
 
       child: Column(
         children: [
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'recipe name:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
           TextField(
             controller: recipeNameController,
             decoration: InputDecoration(
-              labelText: 'name',
-              border: OutlineInputBorder(),
+              hintText: 'write text...',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(left: 14),
             ),
           ),
 
           SizedBox(height: 8),
 
+          const SizedBox(height: 24),
+          
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'ingredients:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
           ingredientsWidget,
 
-          SizedBox(height: 8),
+          const SizedBox(height: 24),
+
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'instructions:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
 
           instructionsWidget,
 
@@ -218,7 +258,6 @@ class DynamicTextFields extends StatelessWidget {
           child: TextField(
             controller: controllers[index],
             decoration: InputDecoration(
-              labelText: index == 0 ? label : null,
               hintText: 'write text...',
               border: InputBorder.none,
               prefixText: numbered ? '${index + 1}. ': '• ',
