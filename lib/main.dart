@@ -248,12 +248,20 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   ];
 
   void _addIngredientField() {
+    if (ingredientsControllers.last.text.trim().isEmpty) {
+      return;
+    }
+
     setState(() {
       ingredientsControllers.add(TextEditingController());
     });
   }
 
   void _addInstructionField() {
+    if (instructionControllers.last.text.trim().isEmpty) {
+      return;
+    }
+
     setState(() {
       instructionControllers.add(TextEditingController());
     });
@@ -375,12 +383,20 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
   }
 
   void _addIngredientField() {
+    if (ingredientsControllers.last.text.trim().isEmpty) {
+      return;
+    }
+
     setState(() {
       ingredientsControllers.add(TextEditingController());
     });
   }
 
   void _addInstructionField() {
+    if (instructionControllers.last.text.trim().isEmpty) {
+      return;
+    }
+
     setState(() {
       instructionControllers.add(TextEditingController());
     });
