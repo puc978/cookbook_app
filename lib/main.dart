@@ -195,12 +195,14 @@ class AddRecipeScreen extends StatefulWidget {
 class DynamicTextFields extends StatelessWidget {
   final List<TextEditingController> controllers;
   final VoidCallback onAdd;
+  final Function(int index) onRemove;
   final String label;
 
   const DynamicTextFields({
     super.key,
     required this.controllers,
     required this.onAdd,
+    required this.onRemove,
     required this.label,
   });
 
@@ -222,7 +224,10 @@ class DynamicTextFields extends StatelessWidget {
                       onPressed: onAdd,
                       icon: const Icon(Icons.add),
                     )
-                  : null,
+                  : IconButton(
+                      onPressed: () => onRemove(index),
+                      icon: const Icon(Icons.delete),
+                    ),
             ),
           ),
         ),
@@ -275,6 +280,24 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     Navigator.pop(context);
   }
 
+  void _removeIngredientField(int index) {
+    if (ingredientsControllers.length <= 1) return;
+
+    setState(() {
+      ingredientsControllers[index].dispose();
+      ingredientsControllers.removeAt(index);
+    });
+  }
+
+  void _removeInstructionField(int index) {
+    if (instructionControllers.length <= 1) return;
+
+    setState(() {
+      instructionControllers[index].dispose();
+      instructionControllers.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -289,11 +312,13 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
           label: 'ingredients',
           controllers: ingredientsControllers,
           onAdd: _addIngredientField,
+          onRemove: _removeIngredientField,
         ),
 
         instructionsWidget: DynamicTextFields(
           label: 'instructions',
           controllers: instructionControllers,
+          onRemove: _removeInstructionField,
           onAdd: _addInstructionField,
         ),
 
@@ -382,6 +407,24 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
     Navigator.pop(context, true);
   }
 
+  void _removeIngredientField(int index) {
+    if (ingredientsControllers.length <= 1) return;
+
+    setState(() {
+      ingredientsControllers[index].dispose();
+      ingredientsControllers.removeAt(index);
+    });
+  }
+
+  void _removeInstructionField(int index) {
+    if (instructionControllers.length <= 1) return;
+
+    setState(() {
+      instructionControllers[index].dispose();
+      instructionControllers.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -395,12 +438,14 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
         label: 'ingredients',
           controllers: ingredientsControllers,
           onAdd: _addIngredientField,
+          onRemove: _removeIngredientField,
         ),
 
         instructionsWidget: DynamicTextFields(
           label: 'instructions',
           controllers: instructionControllers,
           onAdd: _addInstructionField,
+          onRemove: _removeInstructionField,
         ),
         onSave: _updateTask)
     );
