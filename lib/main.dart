@@ -15,17 +15,17 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      home: TaskListScreen(),
+      home: RecipeListScreen(),
     );
   }
 }
 
-class TaskListScreen extends StatefulWidget {
+class RecipeListScreen extends StatefulWidget {
   @override
-  _TaskListScreenState createState() => _TaskListScreenState();
+  _RecipeListScreenState createState() => _RecipeListScreenState();
 }
 
-class _TaskListScreenState extends State<TaskListScreen> {
+class _RecipeListScreenState extends State<RecipeListScreen> {
   final dbHelper = DatabaseHelper.instance;
   List<Task> tasks = [];
 
@@ -61,7 +61,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => RecipeScreen(task: task),
+                  builder: (_) => RecipeViewScreen(task: task),
                 ),
               );
 
@@ -80,7 +80,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => AddRecipeScreen(
+              builder: (_) => RecipeEditorScreen(
                 dbHelper: dbHelper,
               ),
             ),
@@ -182,18 +182,18 @@ class RecipeForm extends StatelessWidget {
   }
 }
      
-class AddRecipeScreen extends StatefulWidget {
+class RecipeEditorScreen extends StatefulWidget {
   final DatabaseHelper dbHelper;
   final Task? task;
 
-  const AddRecipeScreen({
+  const RecipeEditorScreen({
     super.key,
     required this.dbHelper,
     this.task,
   });
 
   @override
-  State<AddRecipeScreen> createState() => _AddRecipeScreenState();
+  State<RecipeEditorScreen> createState() => _RecipeEditorScreenState();
 }
 
 class DynamicTextFields extends StatelessWidget {
@@ -243,7 +243,7 @@ class DynamicTextFields extends StatelessWidget {
   }
 }
 
-class _AddRecipeScreenState extends State<AddRecipeScreen> {
+class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
   late TextEditingController recipeNameController;
   late List<TextEditingController> ingredientsControllers;
   late List<TextEditingController> instructionControllers;
@@ -395,10 +395,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   }
 }
 
-class RecipeScreen extends StatelessWidget {
+class RecipeViewScreen extends StatelessWidget {
   final Task task;
 
-  const RecipeScreen({
+  const RecipeViewScreen({
     super.key,
     required this.task,
   });
@@ -416,7 +416,7 @@ class RecipeScreen extends StatelessWidget {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => AddRecipeScreen(
+                    builder: (_) => RecipeEditorScreen(
                       dbHelper: DatabaseHelper.instance,
                       task: task
                     ),
