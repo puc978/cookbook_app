@@ -144,6 +144,34 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
     Navigator.pop(context, true);
   }
 
+  void _reorderIngredients(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) {
+      newIndex--;
+    }
+
+    setState(() {
+      final controller = ingredientsControllers.removeAt(oldIndex);
+      ingredientsControllers.insert(newIndex, controller);
+
+      final focusNode = ingredientFocusNodes.removeAt(oldIndex);
+      ingredientFocusNodes.insert(newIndex, focusNode);
+    });
+  }
+
+  void _reorderInstructions(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) {
+      newIndex--;
+    }
+
+    setState(() {
+      final controller = instructionControllers.removeAt(oldIndex);
+      instructionControllers.insert(newIndex, controller);
+
+      final focusNode = instructionFocusNodes.removeAt(oldIndex);
+      instructionFocusNodes.insert(newIndex, focusNode);
+    });
+  }
+
   void _removeIngredientField(int index) {
     if (ingredientsControllers.length <= 1) return;
 
@@ -209,6 +237,7 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
           focusNodes: ingredientFocusNodes,
           onAdd: _addIngredientField,
           onRemove: _removeIngredientField,
+          onReorder: _reorderIngredients,
           numbered: false,
         ),
 
@@ -218,6 +247,7 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
           focusNodes: instructionFocusNodes,
           onAdd: _addInstructionField,
           onRemove: _removeInstructionField,
+          onReorder: _reorderInstructions,
           numbered: true,
         ),
         onSave: widget.task == null
@@ -323,6 +353,7 @@ class DynamicTextFields extends StatelessWidget {
   final List<FocusNode> focusNodes;
   final VoidCallback onAdd;
   final Function(int index) onRemove;
+  final ReorderCallback onReorder;
   final String label;
   final bool numbered;
 
@@ -332,38 +363,57 @@ class DynamicTextFields extends StatelessWidget {
     required this.focusNodes,
     required this.onAdd,
     required this.onRemove,
+    required this.onReorder,
     required this.label,
     this.numbered = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(
-        controllers.length,
-        (index) => Padding(
+    return ReorderableListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      buildDefaultDragHandles: false,
+      onReorder: onReorder,
+      itemCount: controllers.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          key: ObjectKey(controllers[index]),
           padding: const EdgeInsets.only(bottom: 8),
-          child: TextField(
-            controller: controllers[index],
-            focusNode: focusNodes[index],
-            decoration: InputDecoration(
-              hintText: 'write text...',
-              border: InputBorder.none,
-              prefixText: numbered ? '${index + 1}. ': '• ',
-
-              suffixIcon: index == controllers.length - 1
-                  ? IconButton(
-                      onPressed: onAdd,
-                      icon: const Icon(Icons.add),
-                    )
-                  : IconButton(
-                      onPressed: () => onRemove(index),
-                      icon: const Icon(Icons.delete),
-                    ),
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controllers[index],
+                  focusNode: focusNodes[index],
+                  decoration: InputDecoration(
+                    hintText: 'write text...',
+                    border: InputBorder.none,
+                    prefixText: numbered ? '${index + 1}. ' : '• ',
+                    suffixIcon: index == controllers.length - 1
+                        ? IconButton(
+                            onPressed: onAdd,
+                            icon: const Icon(Icons.add),
+                          )
+                        : IconButton(
+                            onPressed: () => onRemove(index),
+                            icon: const Icon(Icons.delete),
+                          ),
+                  ),
+                ),
+              ),
+              ReorderableDragStartListener(
+                index: index,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(Icons.drag_indicator),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
