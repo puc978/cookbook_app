@@ -387,6 +387,9 @@ class DynamicTextFields extends StatelessWidget {
                 child: TextField(
                   controller: controllers[index],
                   focusNode: focusNodes[index],
+                  minLines: 1,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     hintText: 'write text...',
                     border: InputBorder.none,
