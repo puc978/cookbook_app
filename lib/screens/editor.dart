@@ -383,6 +383,16 @@ class DynamicTextFields extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(
+                width: numbered ? 30 : 20,
+                child: Center(
+                  child: Text(
+                    numbered ? '${index + 1}.' : '•',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            
               Expanded(
                 child: TextField(
                   controller: controllers[index],
@@ -390,10 +400,10 @@ class DynamicTextFields extends StatelessWidget {
                   minLines: 1,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
+                  textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
                     hintText: 'write text...',
                     border: InputBorder.none,
-                    prefixText: numbered ? '${index + 1}. ' : '• ',
                     suffixIcon: index == controllers.length - 1
                         ? IconButton(
                             onPressed: onAdd,
