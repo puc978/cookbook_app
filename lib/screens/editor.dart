@@ -400,6 +400,7 @@ class DynamicTextFields extends StatelessWidget {
                   minLines: 1,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.done,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
                     hintText: 'write text...',
