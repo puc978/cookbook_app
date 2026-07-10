@@ -21,6 +21,8 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
   late TextEditingController recipeNameController;
   late List<TextEditingController> ingredientsControllers;
   late List<TextEditingController> instructionControllers;
+  late List<FocusNode> ingredientFocusNodes;
+  late List<FocusNode> instructionFocusNodes;
 
   @override
   void initState() {
@@ -44,13 +46,24 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
             .map((e) => TextEditingController(text: e))
             .toList();
 
+
     if (ingredientsControllers.isEmpty) {
       ingredientsControllers.add(TextEditingController());
     }
 
+    ingredientFocusNodes = List.generate(
+      ingredientsControllers.length,
+      (_) => FocusNode(),
+    );
+
     if (instructionControllers.isEmpty) {
       instructionControllers.add(TextEditingController());
     }
+
+    instructionFocusNodes = List.generate(
+      instructionControllers.length,
+      (_) => FocusNode(),
+    );
   }
 
   void _addIngredientField() {
@@ -58,8 +71,16 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
       return;
     }
 
+    final controller = TextEditingController();
+    final focusNode = FocusNode();
+
     setState(() {
-      ingredientsControllers.add(TextEditingController());
+      ingredientsControllers.add(controller);
+      ingredientFocusNodes.add(focusNode);
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
     });
   }
 
@@ -68,8 +89,16 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
       return;
     }
 
+    final controller = TextEditingController();
+    final focusNode = FocusNode();
+
     setState(() {
-      instructionControllers.add(TextEditingController());
+      instructionControllers.add(controller);
+      instructionFocusNodes.add(focusNode);
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
     });
   }
 
@@ -120,7 +149,10 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
 
     setState(() {
       ingredientsControllers[index].dispose();
+      ingredientFocusNodes[index].dispose();
+
       ingredientsControllers.removeAt(index);
+      ingredientFocusNodes.removeAt(index);
     });
   }
 
@@ -129,8 +161,32 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
 
     setState(() {
       instructionControllers[index].dispose();
+      instructionFocusNodes[index].dispose();
+
       instructionControllers.removeAt(index);
+      instructionFocusNodes.removeAt(index);
     });
+  }
+
+  @override
+  void dispose() {
+    recipeNameController.dispose();
+
+    for (final c in ingredientsControllers) {
+      c.dispose();
+    }
+    for (final c in instructionControllers) {
+      c.dispose();
+    }
+
+    for (final f in ingredientFocusNodes) {
+      f.dispose();
+    }
+    for (final f in instructionFocusNodes) {
+      f.dispose();
+    }
+
+    super.dispose();
   }
 
   @override
@@ -150,6 +206,7 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
         ingredientsWidget: DynamicTextFields(
         label: 'ingredients',
           controllers: ingredientsControllers,
+          focusNodes: ingredientFocusNodes,
           onAdd: _addIngredientField,
           onRemove: _removeIngredientField,
           numbered: false,
@@ -158,6 +215,7 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
         instructionsWidget: DynamicTextFields(
           label: 'instructions',
           controllers: instructionControllers,
+          focusNodes: instructionFocusNodes,
           onAdd: _addInstructionField,
           onRemove: _removeInstructionField,
           numbered: true,
@@ -262,6 +320,7 @@ class RecipeForm extends StatelessWidget {
 
 class DynamicTextFields extends StatelessWidget {
   final List<TextEditingController> controllers;
+  final List<FocusNode> focusNodes;
   final VoidCallback onAdd;
   final Function(int index) onRemove;
   final String label;
@@ -270,6 +329,7 @@ class DynamicTextFields extends StatelessWidget {
   const DynamicTextFields({
     super.key,
     required this.controllers,
+    required this.focusNodes,
     required this.onAdd,
     required this.onRemove,
     required this.label,
@@ -285,6 +345,7 @@ class DynamicTextFields extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 8),
           child: TextField(
             controller: controllers[index],
+            focusNode: focusNodes[index],
             decoration: InputDecoration(
               hintText: 'write text...',
               border: InputBorder.none,
