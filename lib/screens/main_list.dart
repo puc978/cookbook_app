@@ -39,20 +39,30 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
         itemBuilder: (context, index) {
           Task task = tasks[index];
 
-          return ListTile(
-            title: Text(task.recipeName),
-            onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => RecipeViewScreen(task: task),
-                ),
-              );
-
-              if (result == true) {
-                _refreshTaskList();
-              }
-            },
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 1.0,
+              ),
+            ),
+            elevation: 0,
+            child: ListTile(
+              title: Text(task.recipeName),
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RecipeViewScreen(task: task),
+                  ),
+                );
+              
+                if (result == true) {
+                  _refreshTaskList();
+                }
+              },
+            )
           );
         },
       ),
