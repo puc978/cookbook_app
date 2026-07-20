@@ -309,10 +309,19 @@ class RecipeForm extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          ElevatedButton(
-            onPressed: onSave,
-            child: Text('save'),
-          ),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onSave,
+              label: const Text('save'),
+              style: FilledButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+          )
         ],
       ),
     );
