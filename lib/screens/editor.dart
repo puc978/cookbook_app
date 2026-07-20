@@ -279,63 +279,35 @@ class RecipeForm extends StatelessWidget {
 
       child: Column(
         children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'recipe name:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+          sectionCard(
+            context: context,
+            title: 'recipe name',
+            child: TextField(
+              controller: recipeNameController,
+              decoration: const InputDecoration(
+                hintText: 'write text...',
+                border: InputBorder.none,
               ),
             ),
           ),
 
-          TextField(
-            controller: recipeNameController,
-            decoration: InputDecoration(
-              hintText: 'write text...',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(left: 14),
-            ),
+          const SizedBox(height: 16),
+
+          sectionCard(
+            context: context,
+            title: 'ingredients',
+            child: ingredientsWidget,
           ),
 
-          SizedBox(height: 8),
+          const SizedBox(height: 16),
 
-          const SizedBox(height: 24),
-          
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'ingredients:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          sectionCard(
+            context: context,
+            title: 'instructions',
+            child: instructionsWidget,
           ),
 
-          const SizedBox(height: 8),
-
-          ingredientsWidget,
-
-          const SizedBox(height: 24),
-
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'instructions:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          instructionsWidget,
-
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
 
           ElevatedButton(
             onPressed: onSave,
@@ -347,6 +319,40 @@ class RecipeForm extends StatelessWidget {
   }
 }
 
+Widget sectionCard({
+  required BuildContext context,
+  required String title,
+  required Widget child,
+}) {
+  return Card(
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+      side: BorderSide(
+        color: Theme.of(context).colorScheme.primary,
+      ),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
+      ),
+    ),
+  );
+}
 
 class DynamicTextFields extends StatelessWidget {
   final List<TextEditingController> controllers;
@@ -375,6 +381,15 @@ class DynamicTextFields extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       buildDefaultDragHandles: false,
       onReorder: onReorder,
+
+      proxyDecorator: (child, index, animation) {
+        return Material(
+          color: Colors.transparent,
+          elevation: 0,
+          child: child,
+        );
+      },
+
       itemCount: controllers.length,
       itemBuilder: (context, index) {
         return Padding(
