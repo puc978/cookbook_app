@@ -405,17 +405,8 @@ class DynamicTextFields extends StatelessWidget {
           key: ObjectKey(controllers[index]),
           padding: const EdgeInsets.only(bottom: 8),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: numbered ? 30 : 20,
-                child: Center(
-                  child: Text(
-                    numbered ? '${index + 1}.' : '•',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
             
               Expanded(
                 child: TextField(
@@ -427,6 +418,10 @@ class DynamicTextFields extends StatelessWidget {
                   textInputAction: TextInputAction.done,
                   textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
+                    prefix: SizedBox(
+                      width: numbered ? 24 : 16,
+                      child: Text(numbered ? '${index + 1}.' : '•'),
+                    ),
                     hintText: 'write text...',
                     border: InputBorder.none,
                     suffixIcon: index == controllers.length - 1

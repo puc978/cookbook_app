@@ -121,28 +121,35 @@ Widget sectionCard({
           const SizedBox(height: 12),
 
           ...List.generate(items.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: numbered ? 30 : 20,
-                    child: Center(
-                      child: Text(
-                        numbered ? '${index + 1}.' : '•',
-                        style: const TextStyle(fontSize: 18),
-                      ),
+          const textStyle = TextStyle(fontSize: 16);
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: numbered ? 28 : 20,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: Text(
+                      numbered ? '${index + 1}.' : '•',
+                      textAlign: TextAlign.center,
+                      style: textStyle,
                     ),
                   ),
+                ),
 
-                  Expanded(
-                    child: Text(items[index]),
+                Expanded(
+                  child: Text(
+                    items[index],
+                    style: textStyle,
                   ),
-                ],
-              ),
-            );
-          }),
+                ),
+              ],
+            ),
+          );
+        }),
         ],
       ),
     ),
