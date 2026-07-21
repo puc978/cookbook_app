@@ -405,7 +405,7 @@ class DynamicTextFields extends StatelessWidget {
           key: ObjectKey(controllers[index]),
           padding: const EdgeInsets.only(bottom: 8),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
             
               Expanded(
