@@ -11,6 +11,33 @@ class RecipeViewScreen extends StatelessWidget {
     required this.task,
   });
 
+  Future<void> _deleteRecipe(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete recipe'),
+        content: const Text(
+          'Are you sure you want to delete this recipe?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      await DatabaseHelper.instance.deleteTask(task.id!);
+      Navigator.pop(context, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,9 +64,7 @@ class RecipeViewScreen extends StatelessWidget {
               }
 
               if (value == 'delete') {
-                await DatabaseHelper.instance.deleteTask(task.id!);
-
-                Navigator.pop(context, true);
+                await _deleteRecipe(context);
               }
             },
 
