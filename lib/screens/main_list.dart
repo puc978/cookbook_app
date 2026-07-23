@@ -68,7 +68,12 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
       ),
       
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).scaffoldBackgroundColor
+        ),
 
         onPressed: () async {
           await Navigator.push(
