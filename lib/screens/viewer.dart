@@ -41,9 +41,7 @@ class RecipeViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(task.recipeName),
-        
+      appBar: AppBar(      
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) async {
@@ -86,7 +84,18 @@ class RecipeViewScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
         child: Column(
-          children: [
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                task.recipeName,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+
+            const SizedBox(height: 16),
+
             sectionCard(
               context: context,
               title: 'ingredients',
