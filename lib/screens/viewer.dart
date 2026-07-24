@@ -15,18 +15,18 @@ class RecipeViewScreen extends StatelessWidget {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete recipe'),
+        title: const Text('delete recipe'),
         content: const Text(
-          'Are you sure you want to delete this recipe?',
+          'are you sure you want to delete this recipe?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: const Text('delete'),
           ),
         ],
       ),
@@ -71,12 +71,12 @@ class RecipeViewScreen extends StatelessWidget {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'edit',
-                child: Text('Edit'),
+                child: Text('edit'),
               ),
 
               PopupMenuItem(
                 value: 'delete',
-                child: Text('Delete'),
+                child: Text('delete'),
               ),
             ],
           )
