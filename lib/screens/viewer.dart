@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../database_helper.dart';
 import '../task.dart';
 import 'editor.dart';
@@ -64,6 +65,41 @@ class RecipeViewScreen extends StatelessWidget {
               if (value == 'delete') {
                 await _deleteRecipe(context);
               }
+
+              if (value == 'share') {
+                final ingredients = (task.ingredients ?? '')
+                    .split('\n')
+                    .where((e) => e.isNotEmpty)
+                    .map((e) => '• $e')
+                    .join('\n');
+
+                final instructions = (task.instruction ?? '')
+                    .split('\n')
+                    .where((e) => e.isNotEmpty)
+                    .toList()
+                    .asMap()
+                    .entries
+                    .map((e) => '${e.key + 1}. ${e.value}')
+                    .join('\n');
+
+                final text = [
+                  task.recipeName,
+                  '',
+                  'ingredients: ',
+                  ingredients,
+                  '',
+                  'instructions: ',
+                  instructions,
+                ].join('\n');
+
+                await Clipboard.setData(ClipboardData(text: text));
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('recipe copied to clipboard')),
+                  );
+                }
+              }
             },
 
             itemBuilder: (context) => [
@@ -75,6 +111,11 @@ class RecipeViewScreen extends StatelessWidget {
               PopupMenuItem(
                 value: 'delete',
                 child: Text('delete'),
+              ),
+
+              PopupMenuItem(
+                value: 'share',
+                child: Text('share'),
               ),
             ],
           )
