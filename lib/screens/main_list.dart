@@ -45,7 +45,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                   builder: (context) => AlertDialog(
                     title: const Text('import database'),
                     content: const Text(
-                      'replace old recipes or merge data?',
+                      'new recipes will be added to your cookbook. existing recipes will be kept.',
                     ),
                     actions: [
                       TextButton(
@@ -53,24 +53,15 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                         child: const Text('cancel'),
                       ),
                       FilledButton(
-                        onPressed: () => Navigator.pop(context, 'replace'),
-                        child: const Text('replace'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'merge'),
-                        child: const Text('merge'),
+                        onPressed: () => Navigator.pop(context, 'import'),
+                        child: const Text('import'),
                       ),
                     ],
                   ),
                 );
 
-                if (result == 'merge') {
-                  await dbHelper.importDatabase(merge: true);
-                  _refreshTaskList();
-                }
-
-                if (result == 'replace') {
-                  await dbHelper.importDatabase(merge: false);
+                if (result == 'import') {
+                  await dbHelper.importDatabase();
                   _refreshTaskList();
                 }
               }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -131,7 +132,72 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> importDatabase({required bool merge}) async {
-    
+  Future<void> importDatabase() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['db'],
+    );
+
+    if (result == null || result.files.single.path == null) {
+      return;
+    }
+
+    final selectedPath = result.files.single.path!;
+
+    final importedDb = await openDatabase(
+      selectedPath,
+      readOnly: true,
+    );
+
+    final currentDb = await database;
+
+    try {
+      // Проверяем, что это база cookbook
+      final tables = await importedDb.rawQuery(
+        "SELECT name FROM sqlite_master "
+        "WHERE type='table' AND name='tasks'",
+      );
+
+      if (tables.isEmpty) {
+        throw Exception('Invalid cookbook database.');
+      }
+
+      final importedRecipes = await importedDb.query('tasks');
+
+      await currentDb.transaction((txn) async {
+        for (final recipe in importedRecipes) {
+          final exists = await txn.query(
+            'tasks',
+            where: '''
+              recipeName = ?
+              AND ingredients = ?
+              AND instruction = ?
+              AND createdAt = ?
+            ''',
+            whereArgs: [
+              recipe['recipeName'],
+              recipe['ingredients'],
+              recipe['instruction'],
+              recipe['createdAt'],
+            ],
+            limit: 1,
+          );
+
+          if (exists.isNotEmpty) {
+            continue;
+          }
+
+          final newRecipe = Map<String, dynamic>.from(recipe);
+          newRecipe.remove('id');
+
+          await txn.insert(
+            'tasks',
+            newRecipe,
+          );
+        }
+      });
+    } finally {
+      await importedDb.close();
+    }
   }
 }
