@@ -20,7 +20,14 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   }
 
   _refreshTaskList() async {
-    List<Task> taskList = await dbHelper.getAllTasks();
+    final taskList = await dbHelper.getAllTasks();
+
+    taskList.sort(
+      (a, b) => a.recipeName.toLowerCase().compareTo(
+        b.recipeName.toLowerCase(),
+      ),
+    );
+
     setState(() {
       tasks = taskList;
     });
