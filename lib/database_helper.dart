@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'task.dart';
@@ -103,4 +107,31 @@ class DatabaseHelper {
     return await db.delete('tasks');
   }
 
+  Future<void> exportDatabase() async {
+    final db = await database;
+
+    final tempDir = await getTemporaryDirectory();
+
+    final exportFile = File(
+      '${tempDir.path}/cookbook_backup.db',
+    );
+
+    if (await exportFile.exists()) {
+      await exportFile.delete();
+    }
+
+    await File(db.path).copy(exportFile.path);
+
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(exportFile.path)],
+        text: 'cookbook database backup',
+        title: 'export database',
+      ),
+    );
+  }
+
+  Future<void> importDatabase({required bool merge}) async {
+    
+  }
 }

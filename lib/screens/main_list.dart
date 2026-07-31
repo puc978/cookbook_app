@@ -30,7 +30,65 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('cookbook'),
+        title: const Text('cookbook'),
+
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'export') {
+                await dbHelper.exportDatabase();
+              }
+
+              if (value == 'import') {
+                final result = await showDialog<String>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('import database'),
+                    content: const Text(
+                      'replace old recipes or merge data?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('cancel'),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(context, 'replace'),
+                        child: const Text('replace'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'merge'),
+                        child: const Text('merge'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (result == 'merge') {
+                  await dbHelper.importDatabase(merge: true);
+                  _refreshTaskList();
+                }
+
+                if (result == 'replace') {
+                  await dbHelper.importDatabase(merge: false);
+                  _refreshTaskList();
+                }
+              }
+            },
+
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'import',
+                child: Text('import database'),
+              ),
+
+              PopupMenuItem(
+                value: 'export',
+                child: Text('export database'),
+              ),
+            ],
+          ),
+        ],
       ),
 
       
