@@ -11,7 +11,6 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static DatabaseHelper get instance => _instance;
 
-  // Singleton pattern
   DatabaseHelper._internal();
 
   static Database? _database;
@@ -23,11 +22,7 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    // Get the path to the database file
     String path = join(await getDatabasesPath(), 'cookbook_database.db');
-
-    // await deleteDatabase(path); // TODO: TEMPORARY DELETE DB
-    // Open/create the database
     return await openDatabase(
       path,
       version: 1,
@@ -36,7 +31,6 @@ class DatabaseHelper {
   }
 
   Future<void> _createDb(Database db, int version) async {
-    // Create the tables
     await db.execute('''
       CREATE TABLE tasks(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,14 +43,11 @@ class DatabaseHelper {
     ''');
   }
 
-
-  // CREATE - Insert a new task
   Future<int> insertTask(Task task) async {
     Database db = await instance.database;
     return await db.insert('tasks', task.toMap());
   }
 
-  // READ - Get all tasks
   Future<List<Task>> getAllTasks() async {
     Database db = await instance.database;
     List<Map<String, dynamic>> maps = await db.query('tasks');
@@ -66,7 +57,6 @@ class DatabaseHelper {
     });
   }
 
-  // READ - Get task by ID
   Future<Task?> getTask(int id) async {
     Database db = await instance.database;
     List<Map<String, dynamic>> maps = await db.query(
@@ -81,7 +71,6 @@ class DatabaseHelper {
     return null;
   }
 
-  // UPDATE - Update a task
   Future<int> updateTask(Task task) async {
     Database db = await instance.database;
     return await db.update(
@@ -92,7 +81,6 @@ class DatabaseHelper {
     );
   }
 
-  // DELETE - Delete a task
   Future<int> deleteTask(int id) async {
     Database db = await instance.database;
     return await db.delete(
@@ -102,7 +90,6 @@ class DatabaseHelper {
     );
   }
 
-  // DELETE - Delete all tasks
   Future<int> deleteAllTasks() async {
     Database db = await instance.database;
     return await db.delete('tasks');
@@ -152,7 +139,6 @@ class DatabaseHelper {
     final currentDb = await database;
 
     try {
-      // Проверяем, что это база cookbook
       final tables = await importedDb.rawQuery(
         "SELECT name FROM sqlite_master "
         "WHERE type='table' AND name='tasks'",

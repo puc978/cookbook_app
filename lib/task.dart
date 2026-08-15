@@ -15,7 +15,6 @@ class Task {
     required this.createdAt,
   });
 
-  // Convert Task to Map for database operations
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -27,7 +26,6 @@ class Task {
     };
   }
 
-  // Create Task from Map (from database)
   factory Task.fromMap(Map<String, dynamic> map) {
     return Task(
       id: map['id'],
@@ -39,7 +37,6 @@ class Task {
     );
   }
 
-  // For debugging
   @override
   String toString() {
     return 'Task(id: $id, recipeName: $recipeName, isCompleted: $isCompleted)';
