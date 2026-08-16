@@ -120,6 +120,8 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
       ),
     );
 
+    if (!mounted) return;
+
     Navigator.pop(context, true);
   }
 
@@ -141,6 +143,8 @@ class _RecipeEditorScreenState extends State<RecipeEditorScreen> {
 
     await widget.dbHelper.updateTask(updatedTask);
 
+    if (!mounted) return;
+    
     Navigator.pop(context, true);
   }
 

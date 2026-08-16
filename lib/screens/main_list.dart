@@ -5,8 +5,10 @@ import 'viewer.dart';
 import 'editor.dart';
 
 class RecipeListScreen extends StatefulWidget {
+  const RecipeListScreen({super.key});
+
   @override
-  _RecipeListScreenState createState() => _RecipeListScreenState();
+  State<RecipeListScreen> createState() => _RecipeListScreenState();
 }
 
 class _RecipeListScreenState extends State<RecipeListScreen> {
@@ -19,7 +21,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     _refreshTaskList();
   }
 
-  _refreshTaskList() async {
+  Future<void> _refreshTaskList() async {
     final taskList = await dbHelper.getAllTasks();
 
     taskList.sort(
@@ -28,9 +30,43 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
       ),
     );
 
+    if (!mounted) return;
+
     setState(() {
       tasks = taskList;
     });
+  }
+
+  Future<void> _importDatabase() async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('import database'),
+        content: const Text(
+                      'new recipes will be added to your cookbook. existing recipes will be kept.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, 'import'),
+            child: const Text('import'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (result == 'import') {
+      await dbHelper.importDatabase();
+
+      if (!mounted) return;
+
+      _refreshTaskList();
+    }
   }
 
   @override
@@ -43,34 +79,11 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'export') {
-                await dbHelper.exportDatabase();
+                dbHelper.exportDatabase();
               }
 
               if (value == 'import') {
-                final result = await showDialog<String>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('import database'),
-                    content: const Text(
-                      'new recipes will be added to your cookbook. existing recipes will be kept.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('cancel'),
-                      ),
-                      FilledButton(
-                        onPressed: () => Navigator.pop(context, 'import'),
-                        child: const Text('import'),
-                      ),
-                    ],
-                  ),
-                );
-
-                if (result == 'import') {
-                  await dbHelper.importDatabase();
-                  _refreshTaskList();
-                }
+                _importDatabase();
               }
             },
 

@@ -35,6 +35,9 @@ class RecipeViewScreen extends StatelessWidget {
 
     if (result == true) {
       await DatabaseHelper.instance.deleteTask(task.id!);
+
+      if (!context.mounted) return;
+
       Navigator.pop(context, true);
     }
   }
@@ -56,6 +59,8 @@ class RecipeViewScreen extends StatelessWidget {
                     ),
                   ),
                 );
+
+                if (!context.mounted) return;
 
                 if (result == true) {
                   Navigator.pop(context, true);
