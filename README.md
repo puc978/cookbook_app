@@ -1,17 +1,23 @@
-# cookbook_app
+`cookbook_app` is an android app for storing your recipes.
 
-A new Flutter project.
+This app build with Flutter, so it can be adapted for other platforms.
 
-## Getting Started
+## Add a recipe
+1. Press `+` to add new recipe.
+2. Enter the recipe name, ingredients and instructions. Click `save` when you're done.
+3. The new recipe will appear in the list of all recipes. Recipes are sorted alphabetically.
 
-This project is a starting point for a Flutter application.
+![img](/readme_img/add_recipe.png)
 
-A few resources to get you started if this is your first Flutter project:
+## Edit, delete and share a recipe
+1. Select a recipe.
+2. Click on __three dots__.
+3. From there, you can edit, delete, or share the recipe. When you choose `share`, the recipe is copied to your clipboard.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+![img](/readme_img/edit_recipe.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Import and export the database
+1. Click on __three dots__
+2. Choose the required option. The database can only be imported and exported in the `*.db` format.
+
+![img](/readme_img/db_recipe.png)
